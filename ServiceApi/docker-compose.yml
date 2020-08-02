@@ -1,0 +1,81 @@
+version: '3'
+services:
+  categoryservice_app:
+    image: categoryservice
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
+    environment:
+      MONGO_DB: "mongodb://db:27017"
+
+
+  noteservice_app:
+    image: noteservice
+    ports:
+      - "8082:80"
+    depends_on:
+      - db
+    environment:
+      MONGO_DB: "mongodb://db:27017"
+
+  reminderservice_app:
+    image: reminderservice 
+    ports:
+      - "8083:80"
+    depends_on:
+      - db
+    environment:
+      MONGO_DB: "mongodb://db:27017"
+
+  userservice_app:
+    image: userservice
+    ports:
+      - "8084:80"
+    depends_on:
+      - db
+    environment:
+      MONGO_DB: "mongodb://db:27017"
+
+
+  webapp_app:
+    image: keepnoteapp
+    ports:
+      - "3000:80"
+    depends_on:
+      - categoryservice_app
+      - userservice_app
+      - reminderservice_app 
+      - noteservice_app
+      - authenticationservice_app
+
+  authenticationservice_app:
+    image: authenticationservice     
+    ports:
+      - "8085:80"
+    depends_on:
+      - SQL_DB
+    environment:
+      SQL_DB_CON: "Server=10.0.75.1,1433;Initial Catalog=AuthDb;User Id=sa;Password=Password@123;"
+
+ 
+  db:
+    image: "mongo"
+    ports:
+      - "27017:27017"
+
+  SQL_DB:
+    image: mcr.microsoft.com/mssql/server
+    container_name: SQL_DB
+    ports:
+      - "1433:1433"
+    environment:
+      - SA_PASSWORD=Password@123
+      - ACCEPT_EULA=Y
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10" 
+    expose:  
+      - 1433
+      

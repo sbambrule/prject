@@ -1,0 +1,12 @@
+FROM microsoft/dotnet:sdk as build
+WORKDIR /app
+COPY  *.csproj ./ 
+RUN dotnet restore
+
+COPY . ./
+RUN dotnet publish -c Release -o out
+
+FROM microsoft/dotnet:aspnetcore-runtime
+COPY --from=build /app/out/ ./
+
+ENTRYPOINT ["dotnet","ReminderService.dll"]
